@@ -35,7 +35,7 @@ public class DatabaseConnection {
             int columnCount = metaData.getColumnCount();
 
             while (rs.next()) {
-                Map<String, Object> row = new HashMap<>();
+                Map<String, Object> row = new LinkedHashMap<>();
                 for (int i = 1; i <= columnCount; i++) {
                     row.put(metaData.getColumnName(i), rs.getObject(i));
                 }
