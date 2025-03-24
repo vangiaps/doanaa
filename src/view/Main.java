@@ -4,17 +4,36 @@
  */
 package view;
 
-/**
- *
- * @author ADMIN
- */
+import java.util.List;
+import java.util.Map;
+import javax.swing.table.DefaultTableModel;
+
 public class Main extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Main
-     */
+    private final String[] MonAn = {"Tên món ăn", "Giá", "Mô tả", "Số lượng"};
+    private final DefaultTableModel tbMonAn = new DefaultTableModel(MonAn, 0);
+    
+    private final String[] KhachHang = {"Họ tên", "SĐT", "Email", "Địa chỉ"};
+    private final DefaultTableModel tbKhachHang = new DefaultTableModel(KhachHang, 0);
+    
+    DatabaseConnection cn = new DatabaseConnection();
+    
     public Main() {
         initComponents();
+        
+        LoadData("SELECT [TenMonAn], [Gia], [MoTa], [SoLuongTon] FROM [BanDoAn].[dbo].[MonAn]", tbMonAn, jTable1);
+        LoadData("SELECT [HoTen], [SoDienThoai], [Email], [DiaChi] FROM [BanDoAn].[dbo].[KhachHang]", tbKhachHang, jTable4);
+    }
+    
+    private void LoadData(String query, DefaultTableModel tableModel, javax.swing.JTable table) {
+        List<Map<String, Object>> data = cn.executeQuery(query);
+        tableModel.setRowCount(0);
+
+        for (Map<String, Object> row : data) {
+            Object[] rowData = row.values().toArray();
+            tableModel.addRow(rowData);
+        }
+        table.setModel(tableModel);
     }
 
     /**
@@ -438,6 +457,7 @@ public class Main extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     /**
