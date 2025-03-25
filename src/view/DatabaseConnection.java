@@ -4,9 +4,9 @@ import java.sql.*;
 import java.util.*;
 
 public class DatabaseConnection {  
-    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=BanDoAn;trustServerCertificate=true";
+    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=QuanLyBanDoAn;trustServerCertificate=true";
     private static final String USER = "sa";
-    private static final String PASSWORD = "16124";
+    private static final String PASSWORD = "123456";
 
     public static Connection getConnection() {
         Connection conn = null;
