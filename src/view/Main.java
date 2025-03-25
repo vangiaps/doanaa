@@ -4,6 +4,7 @@
  */
 package view;
 
+import java.sql.*;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
@@ -17,6 +18,12 @@ public class Main extends javax.swing.JFrame {
     private final String[] KhachHang = {"Họ tên", "SĐT", "Email", "Địa chỉ"};
     private final DefaultTableModel tbKhachHang = new DefaultTableModel(KhachHang, 0);
     
+    private final String[] DonHang = {"Mã đơn hàng", "Tên khách", "Số điện thoại", "Tổng tiền", "Mô tả"};
+    private final DefaultTableModel tbDonHang = new DefaultTableModel(DonHang, 0);
+    
+//    private final String[] MonAnSL = {"Món ăn", "Số lượng"};
+//    private final DefaultTableModel tbMonAnSL = new DefaultTableModel(MonAnSL, 0);
+    
     DatabaseConnection cn = new DatabaseConnection();
     
     public Main() {
@@ -24,6 +31,16 @@ public class Main extends javax.swing.JFrame {
         
         LoadData("SELECT TenMonAn, Gia, MoTa, SoLuongTon FROM MonAn", tbMonAn, jtbMonAn);
         LoadData("SELECT HoTen, SoDienThoai, Email, DiaChi FROM KhachHang", tbKhachHang, jtbKhachHang);
+        LoadData("SELECT \n"
+                + "    dh.MaDonHang, \n"
+                + "    kh.HoTen AS TenKhachHang, \n"
+                + "    kh.SoDienThoai AS SDT, \n"
+                + "    dh.TongTien, \n"
+                + "    ma.MoTa AS MoTaMonAn\n"
+                + "FROM DonHang dh\n"
+                + "JOIN KhachHang kh ON dh.MaKhachHang = kh.MaKhachHang\n"
+                + "JOIN ChiTietDonHang ctdh ON dh.MaDonHang = ctdh.MaDonHang\n"
+                + "JOIN MonAn ma ON ctdh.MaMonAn = ma.MaMonAn;", tbDonHang, jtbDSDonHang);
     }
     
     private void LoadData(String query, DefaultTableModel tableModel, javax.swing.JTable table) {
@@ -95,27 +112,25 @@ public class Main extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jPanel9 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
-        jTextField4 = new javax.swing.JTextField();
+        jtxtHoTenDonHang = new javax.swing.JTextField();
+        jtxtSDTDonHang = new javax.swing.JTextField();
+        jtxtTongTienDonHang = new javax.swing.JTextField();
         jScrollPane7 = new javax.swing.JScrollPane();
-        jTable6 = new javax.swing.JTable();
+        jtbMonAnSoLuong = new javax.swing.JTable();
         jScrollPane8 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        jtxtMoTaDonHang = new javax.swing.JTextPane();
+        jbtnThemDonHang = new javax.swing.JButton();
+        jbtnXoaDonHang = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
         jPanel10 = new javax.swing.JPanel();
         jScrollPane6 = new javax.swing.JScrollPane();
         jtbDSDonHang = new javax.swing.JTable();
-        jTextField9 = new javax.swing.JTextField();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        jtxtTimKiemDonHang = new javax.swing.JTextField();
+        jbtnTimKiemDonHang = new javax.swing.JButton();
+        jbtnLamMoiDonHang = new javax.swing.JButton();
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -532,15 +547,13 @@ public class Main extends javax.swing.JFrame {
         jLabel10.setFont(new java.awt.Font("Montserrat Black", 0, 22)); // NOI18N
         jLabel10.setText("DANH SÁCH ĐƠN HÀNG");
 
-        jTextField1.setPreferredSize(new java.awt.Dimension(150, 22));
+        jtxtHoTenDonHang.setPreferredSize(new java.awt.Dimension(150, 22));
 
-        jTextField2.setPreferredSize(new java.awt.Dimension(150, 22));
+        jtxtSDTDonHang.setPreferredSize(new java.awt.Dimension(150, 22));
 
-        jTextField3.setPreferredSize(new java.awt.Dimension(100, 22));
+        jtxtTongTienDonHang.setPreferredSize(new java.awt.Dimension(100, 22));
 
-        jTextField4.setPreferredSize(new java.awt.Dimension(100, 22));
-
-        jTable6.setModel(new javax.swing.table.DefaultTableModel(
+        jtbMonAnSoLuong.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null},
                 {null, null},
@@ -548,25 +561,28 @@ public class Main extends javax.swing.JFrame {
                 {null, null}
             },
             new String [] {
-                "Title 1", "Title 2"
+                "Món Ăn", "Số lượng"
             }
         ));
-        jScrollPane7.setViewportView(jTable6);
+        jScrollPane7.setViewportView(jtbMonAnSoLuong);
 
-        jScrollPane8.setViewportView(jTextPane1);
+        jScrollPane8.setViewportView(jtxtMoTaDonHang);
 
-        jButton1.setText("Thêm");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jbtnThemDonHang.setText("Thêm");
+        jbtnThemDonHang.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jbtnThemDonHangActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Xóa");
+        jbtnXoaDonHang.setText("Xóa");
+        jbtnXoaDonHang.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtnXoaDonHangActionPerformed(evt);
+            }
+        });
 
         jLabel11.setText("Họ tên ");
-
-        jLabel12.setText("Số lượng");
 
         jLabel13.setText("Số điện thoại");
 
@@ -582,20 +598,18 @@ public class Main extends javax.swing.JFrame {
                 .addGap(44, 44, 44)
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel9Layout.createSequentialGroup()
-                        .addComponent(jButton1)
+                        .addComponent(jbtnThemDonHang)
                         .addGap(98, 98, 98)
-                        .addComponent(jButton2))
+                        .addComponent(jbtnXoaDonHang))
                     .addGroup(jPanel9Layout.createSequentialGroup()
                         .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel11)
                             .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jtxtSDTDonHang, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
+                            .addComponent(jtxtHoTenDonHang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(70, 70, 70)
                         .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jTextField4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jtxtTongTienDonHang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addGap(75, 75, 75)
                 .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -617,27 +631,23 @@ public class Main extends javax.swing.JFrame {
                         .addGap(19, 19, 19)
                         .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel11)
-                            .addComponent(jLabel12))
+                        .addComponent(jLabel11)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel9Layout.createSequentialGroup()
-                                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jtxtHoTenDonHang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(38, 38, 38)
                                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jLabel13)
                                     .addComponent(jLabel14))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jtxtTongTienDonHang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jtxtSDTDonHang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jButton1)
-                                    .addComponent(jButton2)))
+                                    .addComponent(jbtnThemDonHang)
+                                    .addComponent(jbtnXoaDonHang)))
                             .addComponent(jScrollPane7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel9Layout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -652,21 +662,36 @@ public class Main extends javax.swing.JFrame {
 
         jtbDSDonHang.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Title 1", "Title 2", "Title 3", "Title 4", "Title 5"
             }
         ));
+        jtbDSDonHang.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jtbDSDonHangMouseClicked(evt);
+            }
+        });
         jScrollPane6.setViewportView(jtbDSDonHang);
 
-        jButton3.setText("tìm kiếm");
-        jButton3.setActionCommand("Tìm kiếm");
+        jbtnTimKiemDonHang.setText("tìm kiếm");
+        jbtnTimKiemDonHang.setActionCommand("Tìm kiếm");
+        jbtnTimKiemDonHang.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtnTimKiemDonHangActionPerformed(evt);
+            }
+        });
 
-        jButton4.setText("Tạo mới");
+        jbtnLamMoiDonHang.setText("Làm mới");
+        jbtnLamMoiDonHang.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtnLamMoiDonHangActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
         jPanel10.setLayout(jPanel10Layout);
@@ -677,11 +702,11 @@ public class Main extends javax.swing.JFrame {
                 .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane6)
                     .addGroup(jPanel10Layout.createSequentialGroup()
-                        .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jtxtTimKiemDonHang, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton3)
+                        .addComponent(jbtnTimKiemDonHang)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton4)))
+                        .addComponent(jbtnLamMoiDonHang)))
                 .addContainerGap())
         );
         jPanel10Layout.setVerticalGroup(
@@ -689,9 +714,9 @@ public class Main extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel10Layout.createSequentialGroup()
                 .addContainerGap(12, Short.MAX_VALUE)
                 .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton3)
-                    .addComponent(jButton4))
+                    .addComponent(jtxtTimKiemDonHang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jbtnTimKiemDonHang)
+                    .addComponent(jbtnLamMoiDonHang))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -733,10 +758,10 @@ public class Main extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void jbtnThemDonHangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnThemDonHangActionPerformed
         ThemDON orderForm = new ThemDON();
     orderForm.setVisible(true);// TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_jbtnThemDonHangActionPerformed
 
     private void jbtnLamMoiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnLamMoiActionPerformed
         LoadData("SELECT TenMonAn, Gia, MoTa, SoLuongTon FROM MonAn", tbMonAn, jtbMonAn);
@@ -933,6 +958,128 @@ public class Main extends javax.swing.JFrame {
         jtbKhachHang.setModel(tbKhachHang);
     }//GEN-LAST:event_jtxtTimKiemKhachActionPerformed
 
+    private void jtbDSDonHangMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jtbDSDonHangMouseClicked
+        int selectedRow = jtbDSDonHang.getSelectedRow();
+        if (selectedRow != -1) {
+            jtxtHoTenDonHang.setText(jtbDSDonHang.getValueAt(selectedRow, 1).toString());
+            jtxtSDTDonHang.setText(jtbDSDonHang.getValueAt(selectedRow, 2).toString());
+            jtxtTongTienDonHang.setText(jtbDSDonHang.getValueAt(selectedRow, 3).toString());
+            jtxtMoTaDonHang.setText(jtbDSDonHang.getValueAt(selectedRow, 4).toString());
+
+            // Lấy mã đơn hàng
+            String maDonHang = jtbDSDonHang.getValueAt(selectedRow, 0).toString();
+
+            // Truy vấn danh sách món ăn và số lượng trong đơn hàng
+            String query = "SELECT ma.TenMonAn, ctdh.SoLuong "
+                    + "FROM ChiTietDonHang ctdh "
+                    + "JOIN MonAn ma ON ctdh.MaMonAn = ma.MaMonAn "
+                    + "WHERE ctdh.MaDonHang = ?";
+
+            List<Map<String, Object>> danhSachMonAn = DatabaseConnection.executeQuery(query, maDonHang);
+
+            // Xóa dữ liệu cũ trong bảng jtbMonAnSL
+            DefaultTableModel model = (DefaultTableModel) jtbMonAnSoLuong.getModel();
+            model.setRowCount(0);
+
+            // Đổ dữ liệu mới vào bảng jtbMonAnSL
+            for (Map<String, Object> row : danhSachMonAn) {
+                model.addRow(new Object[]{
+                    row.get("TenMonAn"),
+                    row.get("SoLuong")
+                });
+            }
+        }
+    }//GEN-LAST:event_jtbDSDonHangMouseClicked
+
+    private void jbtnXoaDonHangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnXoaDonHangActionPerformed
+        int selectedRow = jtbDSDonHang.getSelectedRow();
+        
+        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa đơn hàng này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+        
+        String maDonHang = jtbDSDonHang.getValueAt(selectedRow, 0).toString();
+        
+        try (Connection conn = DatabaseConnection.getConnection()) {
+        conn.setAutoCommit(false);
+        
+        // Xóa dữ liệu trong ChiTietDonHang trước
+        String deleteChiTietQuery = "DELETE FROM ChiTietDonHang WHERE MaDonHang = ?";
+        int rowsDeletedChiTiet = DatabaseConnection.executeUpdate(deleteChiTietQuery, maDonHang);
+
+        // Xóa đơn hàng trong DonHang
+        String deleteDonHangQuery = "DELETE FROM DonHang WHERE MaDonHang = ?";
+        int rowsDeletedDonHang = DatabaseConnection.executeUpdate(deleteDonHangQuery, maDonHang);
+        // xoá khách 
+        String deleteKhachHangQuery = "DELETE FROM KhachHang WHERE MaKhachHang = ?";
+        int rowsDeletedKhachHang = DatabaseConnection.executeUpdate(deleteKhachHangQuery, maDonHang);
+        
+        if (rowsDeletedChiTiet >= 0 && rowsDeletedDonHang >= 0) {
+            conn.commit();
+            JOptionPane.showMessageDialog(this, "Xóa đơn hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            conn.rollback();
+            JOptionPane.showMessageDialog(this, "Lỗi khi xóa đơn hàng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+
+        LoadData("SELECT \n"
+                + "    dh.MaDonHang, \n"
+                + "    kh.HoTen AS TenKhachHang, \n"
+                + "    kh.SoDienThoai AS SDT, \n"
+                + "    dh.TongTien, \n"
+                + "    ma.MoTa AS MoTaMonAn\n"
+                + "FROM DonHang dh\n"
+                + "JOIN KhachHang kh ON dh.MaKhachHang = kh.MaKhachHang\n"
+                + "JOIN ChiTietDonHang ctdh ON dh.MaDonHang = ctdh.MaDonHang\n"
+                + "JOIN MonAn ma ON ctdh.MaMonAn = ma.MaMonAn;", tbDonHang, jtbDSDonHang);
+        
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Lỗi khi xóa đơn hàng: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+    }
+    }//GEN-LAST:event_jbtnXoaDonHangActionPerformed
+
+    private void jbtnLamMoiDonHangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnLamMoiDonHangActionPerformed
+        LoadData("SELECT \n"
+                + "    dh.MaDonHang, \n"
+                + "    kh.HoTen AS TenKhachHang, \n"
+                + "    kh.SoDienThoai AS SDT, \n"
+                + "    dh.TongTien, \n"
+                + "    ma.MoTa AS MoTaMonAn\n"
+                + "FROM DonHang dh\n"
+                + "JOIN KhachHang kh ON dh.MaKhachHang = kh.MaKhachHang\n"
+                + "JOIN ChiTietDonHang ctdh ON dh.MaDonHang = ctdh.MaDonHang\n"
+                + "JOIN MonAn ma ON ctdh.MaMonAn = ma.MaMonAn;", tbDonHang, jtbDSDonHang);
+    }//GEN-LAST:event_jbtnLamMoiDonHangActionPerformed
+
+    private void jbtnTimKiemDonHangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnTimKiemDonHangActionPerformed
+        String timKiemKhach = jtxtTimKiemDonHang.getText().trim();
+
+        String query = "SELECT " +
+               "    dh.MaDonHang, " +
+               "    kh.HoTen AS TenKhachHang, " +
+               "    kh.SoDienThoai AS SDT, " +
+               "    dh.TongTien, " +
+               "    ma.MoTa AS MoTaMonAn " +
+               "FROM DonHang dh " +
+               "JOIN KhachHang kh ON dh.MaKhachHang = kh.MaKhachHang " +
+               "JOIN ChiTietDonHang ctdh ON dh.MaDonHang = ctdh.MaDonHang " +
+               "JOIN MonAn ma ON ctdh.MaMonAn = ma.MaMonAn " +
+               "WHERE kh.SoDienThoai LIKE ?";
+        
+        List<Map<String, Object>> data = DatabaseConnection.executeQuery(query, "%" + timKiemKhach + "%");
+
+        tbDonHang.setRowCount(0);
+
+        for (Map<String, Object> row : data) {
+            Object[] rowData = row.values().toArray();
+            tbDonHang.addRow(rowData);
+        }
+
+        jtbDSDonHang.setModel(tbDonHang);
+    }//GEN-LAST:event_jbtnTimKiemDonHangActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -969,14 +1116,9 @@ public class Main extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
@@ -1010,34 +1152,37 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable2;
     private javax.swing.JTable jTable3;
-    private javax.swing.JTable jTable6;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField9;
-    private javax.swing.JTextPane jTextPane1;
     private javax.swing.JButton jbtnLamMoi;
+    private javax.swing.JButton jbtnLamMoiDonHang;
     private javax.swing.JButton jbtnLamMoiKhach;
     private javax.swing.JButton jbtnSua;
     private javax.swing.JButton jbtnSuaKhach;
     private javax.swing.JButton jbtnThem;
+    private javax.swing.JButton jbtnThemDonHang;
     private javax.swing.JButton jbtnTimKiem;
+    private javax.swing.JButton jbtnTimKiemDonHang;
     private javax.swing.JButton jbtnXoa;
+    private javax.swing.JButton jbtnXoaDonHang;
     private javax.swing.JButton jbtnXoaKhach;
     private javax.swing.JTable jtbDSDonHang;
     private javax.swing.JTable jtbKhachHang;
     private javax.swing.JTable jtbMonAn;
+    private javax.swing.JTable jtbMonAnSoLuong;
     private javax.swing.JTextField jtxtDiaChi;
     private javax.swing.JTextField jtxtEmail;
     private javax.swing.JTextField jtxtGia;
     private javax.swing.JTextField jtxtHoTen;
+    private javax.swing.JTextField jtxtHoTenDonHang;
+    private javax.swing.JTextPane jtxtMoTaDonHang;
     private javax.swing.JTextPane jtxtMota;
     private javax.swing.JTextField jtxtSDT;
+    private javax.swing.JTextField jtxtSDTDonHang;
     private javax.swing.JTextField jtxtSearch;
     private javax.swing.JTextField jtxtSearchKhach;
     private javax.swing.JTextField jtxtSoLuong;
     private javax.swing.JTextField jtxtTenMon;
+    private javax.swing.JTextField jtxtTimKiemDonHang;
     private javax.swing.JButton jtxtTimKiemKhach;
+    private javax.swing.JTextField jtxtTongTienDonHang;
     // End of variables declaration//GEN-END:variables
 }
